@@ -1,11 +1,11 @@
 const nextBtn = document.getElementById("next");
 const letterDisplay = document.getElementById("letter");
 const docBody = document.querySelector("body");
-const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
+const alphaQueue = new Array(10).fill(null);
 
-function pickRandomLetter () {
-  let random = Math.floor(Math.random() * 26);
-  return alphabet[random];
+function pickRandomLetterIndex () {
+  return Math.floor(Math.random() * alphabet.length);
 }
 
 function changeLetterColor () {
@@ -24,17 +24,27 @@ function changeLetterColor () {
   }
 }
 
-nextBtn.addEventListener("click", () => {
-  const randLetter = pickRandomLetter ();
+function updateLetter () {
+  const randLetterIndex = pickRandomLetterIndex ();
+  const randLetter = alphabet[randLetterIndex];
   letterDisplay.innerText = randLetter;
   changeLetterColor ();
-})
+  if (alphaQueue[0] === null) {
+    alphabet.splice(randLetterIndex, 1);
+    alphaQueue.shift()
+    alphaQueue.push(randLetter);
+  } else {
+    alphabet.splice(randLetterIndex, 1, alphaQueue[0]);
+    alphaQueue.shift()
+    alphaQueue.push(randLetter);
+  }
+}
+
+nextBtn.addEventListener("click", () => updateLetter());
 
 docBody.addEventListener("keyup", (e) => {
   if (e.code === "Space") {
     e.preventDefault();
-    const randLetter = pickRandomLetter ();
-    letterDisplay.innerText = randLetter;
-    changeLetterColor ();
+    updateLetter();
   }
 })
